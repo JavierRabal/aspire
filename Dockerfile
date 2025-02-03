@@ -33,12 +33,18 @@ RUN micromamba create -y -f /tmp/env.yaml \
 RUN echo "micromamba activate aspire" >> ~/.bashrc
 RUN echo "export PATH=/opt/conda/envs/aspire/bin:${PATH}"  >> ~/.bashrc
 
+RUN micromamba run -n aspire R -e "remotes::install_github('FinnishCancerRegistry/popEpi')"
+
 COPY --from=ui_development --chown=$MAMBA_USER:$MAMBA_USER /usr/src/app/front /home/mambauser/front
 COPY --chown=$MAMBA_USER:$MAMBA_USER api_aspire /home/$MAMBA_USER
 COPY --chown=$MAMBA_USER:$MAMBA_USER projects /home/$MAMBA_USER/projects
 
 COPY --chown=$MAMBA_USER:$MAMBA_USER entrypoint.sh /opt/entrypoint.sh
 RUN chmod +x /opt/entrypoint.sh
+
+# Change logo EUCANScreen
+COPY --chown=$MAMBA_USER:$MAMBA_USER main_logo.png /temp/main_logo.C2DWUNGn.png
+RUN cp /temp/main_logo.C2DWUNGn.png /home/mambauser/front/_app/immutable/assets
 
 ENV APP_PORT=3000
 ENV APP_HOST=0.0.0.0
